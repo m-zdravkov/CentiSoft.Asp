@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Core.Models
 {
-    public class Project
+    public class Project : IIdentifiable
     {
         public int Id { get; set; }
         public string Task { get; set; }

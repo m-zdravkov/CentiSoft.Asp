@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Core.Models
 {
-    public class Customer
+    public class Customer : IIdentifiable
     {
         public int Id { get; set; }
         public string Name { get; set; }

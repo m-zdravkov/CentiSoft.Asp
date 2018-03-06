@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Core.Models
 {
-    public class Task
+    public class Task : IIdentifiable
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class Developer
+    public class Developer : IIdentifiable
     {
         public int Id { get; set; }
         public string Name { get; set; }
