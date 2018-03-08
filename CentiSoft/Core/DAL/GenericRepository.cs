@@ -2,62 +2,94 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace Core.DAL
 {
     /// <summary>
     /// Executes generic code, takes in DB set. Coupled with CentiSoftContext
     /// </summary>
-    class GenericRepository<T> : IRepository<T> where T : class, IIdentifiable
+    class GenericAsyncRepository<T> : IAsyncRepository<T> where T : class, IIdentifiable
     {
-        public void Delete(int id)
+        private DbContext CreateContext()
         {
-            using (var context = new CentiSoftContext())
-            {
-                ///TODO: FINISH
-                /*var schema = context.Set<T>();
-                schema.Attach(o);
-                schema.Remove(o);
-
-                context.SaveChanges();*/
-            }
+            return new CentiSoftContext();
         }
 
-        public void Delete(T o)
+        public async void DeleteAsync(int id)
         {
-            using(var context = new CentiSoftContext())
+            using (var context = CreateContext())
             {
-                var schema = context.Set<T>();
-                schema.Attach(o);
-                schema.Remove(o);
+                T o = await LoadContextualAsync(context, id);
+
+                context.Set<T>().Attach(o);
+                context.Set<T>().Remove(o);
 
                 context.SaveChanges();
             }
         }
 
-        public T Load(int id)
+        public void DeleteAsync(T o)
         {
-            throw new NotImplementedException();
+            DeleteAsync(o.Id);
         }
 
-        public T Load(T o)
+        public async Task<T> LoadAsync(int id)
         {
-            throw new NotImplementedException();
+            using (var context = CreateContext())
+            {
+                return await LoadContextualAsync(context, id);
+            }
         }
 
-        public List<T> LoadAll()
+        public async Task<List<T>> LoadAllAsync()
         {
-            throw new NotImplementedException();
+            using (var context = CreateContext())
+            {
+                return await context.Set<T>().ToListAsync();
+            }
         }
 
-        public void Save(int id)
+        public async void SaveAsync(T o)
         {
-            throw new NotImplementedException();
+            using (var context = CreateContext())
+            {
+                T existing = await LoadContextualAsync(context, o.Id);
+
+                if (existing == null)
+                {
+                    Create(o);
+                }
+                else
+                {
+                    Update(o);
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
 
-        public void Save(T o)
+        private void Create(T o)
         {
-            throw new NotImplementedException();
+            using (var context = CreateContext())
+            {
+                context.Set<T>().Add(o);
+                context.SaveChanges();
+            }
+        }
+
+        private void Update(T o)
+        {
+            using (var context = CreateContext())
+            {
+                context.Set<T>().Attach(o);
+                context.Entry<T>(o).State = EntityState.Modified;
+            }
+        }
+
+        private async Task<T> LoadContextualAsync(DbContext context, int id)
+        {
+            return await context.Set<T>().SingleOrDefaultAsync(r => r.Id == id);
         }
     }
 }
