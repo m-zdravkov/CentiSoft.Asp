@@ -19,10 +19,8 @@ namespace Core.BLL
         
         public void CreateClient(string name)
         {
-            using (var UnitOfWork = new UnitOfWorkEf6(new CentiSoftContext()))
-            {
-                UnitOfWork.Clients.Add(new Client { Name = name });
-            }
+            UnitOfWork.Clients.Add(new Client { Name = name });
+            UnitOfWork.Complete();
         }
     }
 }
