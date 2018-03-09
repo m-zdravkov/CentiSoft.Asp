@@ -19,6 +19,9 @@ namespace Core.DAL
         // on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.
 
         public virtual DbSet<Client> Clients { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
+        public virtual DbSet<Task> Task { get; set; }
         public virtual DbSet<Developer> Developers { get; set; }
     }
 
